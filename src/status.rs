@@ -11,6 +11,14 @@ pub struct StatusCode(NonZeroU16);
 pub struct InvalidStatusCode;
 
 
+impl Default for StatusCode {
+    fn default() -> Self {
+        let code = NonZeroU16::new(200).expect("200 is a valid non-zero u16.");
+        StatusCode(code)
+    }
+}
+
+
 impl TryFrom<u16> for StatusCode {
     type Error = InvalidStatusCode;
 

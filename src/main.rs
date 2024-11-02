@@ -11,8 +11,6 @@ use request::*;
 use server::*;
 use response::*;
 
-use std::io;
-use std::io::BufReader;
 use std::io::prelude::*;
 use std::net::TcpStream;
 
@@ -34,21 +32,17 @@ fn main() {
 fn handle_connection(mut stream: TcpStream) {
     
     let request = Request::from_stream(&mut stream).unwrap();
-
     println!("{:?}", request.method());
     println!("{:?}", request.version());
     println!("{:?}", request.uri());
     println!("{:?}", request.body());
-    
-    println!("Connection successful!");
 
-    let status = "HTTP/1.1 200 OK";
-    let content_file = std::fs::File::open("response.html")
-        .expect("Failed to open response file");
-    let content = io::read_to_string(content_file)
+    let content = std::fs::read_to_string("response.html")
         .expect("Faile to read response from file.");
-    let length = content.len();
-    let response = format!("{status}\r\nContent-Length: {length}\r\n\r\n{content}");
+    let response = Response::builder()
+        .with_body(content)
+        .expect("Failed to construct response");
+
     write!(stream, "{response}")
         .expect("Failed to write response");
 

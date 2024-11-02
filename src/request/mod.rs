@@ -1,16 +1,16 @@
-pub mod parts;
 pub mod build;
+pub mod parts;
 
-use std::io::{BufRead, BufReader, Read};
+use std::io::{BufRead, BufReader};
 use std::net::TcpStream;
 
 use crate::method::{Method, InvalidMethod};
 use crate::version::{Version, InvalidVersion};
 use crate::uri::{Uri, InvalidUri};
-use crate::parts::Parts;
-use crate::request::build::Builder;
 use crate::error::{Error, Result};
 
+use parts::Parts;
+use build::Builder;
 
 pub struct Request<T> {
     head: Parts,

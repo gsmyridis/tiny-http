@@ -75,7 +75,7 @@ impl Builder {
         Builder{ inner }
     }
 
-    /// Sets the boty of the request that the `Builder` is constructing.
+    /// Sets the body of the request that the `Builder` is constructing.
     pub fn with_body<T>(self, body: T) -> Result<Request<T>> {
         self.inner.map(move |head| Request { head, body }) 
     }
