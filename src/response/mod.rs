@@ -7,7 +7,6 @@ use crate::status::StatusCode;
 use parts::Parts;
 use build::Builder;
 
-use std::fmt;
 
 pub struct Response<T> {
     head: Parts,
@@ -47,14 +46,3 @@ impl<T> Response<T> {
 }
 
 
-impl fmt::Display for Response<String>
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(&format!("{}\r\nContent-Length: {}\r\n\r\n{}", 
-            self.version(), 
-            self.body().len(), 
-            self.body())
-        )
-
-    }
-}

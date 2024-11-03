@@ -7,9 +7,9 @@ pub mod uri;
 pub mod version;
 pub mod status;
 
-use request::*;
-use server::*;
-use response::*;
+use request::Request;
+use server::HttpServer;
+use response::Response;
 
 use std::io::prelude::*;
 use std::net::TcpStream;
@@ -40,10 +40,15 @@ fn handle_connection(mut stream: TcpStream) {
     let content = std::fs::read_to_string("response.html")
         .expect("Faile to read response from file.");
     let response = Response::builder()
+        .with_status(200)
         .with_body(content)
         .expect("Failed to construct response");
 
-    write!(stream, "{response}")
+
+    let response_line = format!(
+        "{} {} {}\r\n\r\n", response.version(), response.status().code(), response.status().msg().unwrap()
+    );
+    write!(stream, "{response_line}")
         .expect("Failed to write response");
 
 }
