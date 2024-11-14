@@ -8,6 +8,8 @@ use crate::method::{Method, InvalidMethod};
 use crate::version::{Version, InvalidVersion};
 use crate::uri::{Uri, InvalidUri};
 use crate::error::{Error, Result};
+use crate::header::value::HeaderValue;
+use crate::header::name::HeaderName;
 
 use parts::Parts;
 use build::Builder;
@@ -18,7 +20,6 @@ pub struct Request<T> {
 }
 
 
-
 impl Request<()> {
 
     /// Returns a `Builder` that constructs a `Request`.
@@ -27,25 +28,39 @@ impl Request<()> {
         Builder::new()
     }
 
+    /// Creates a new `Request` from a TCP Stream.
     pub fn from_stream(stream: &mut TcpStream) -> Result<Request<String>> {
-         
-        let bufreader = BufReader::new(stream);
-        let mut request_lines = bufreader.lines();
+        let mut bufreader = BufReader::new(stream);
+        
+        // Parse the reqeust's request line
+        let mut request_line = String::new();
+        bufreader.read_line(&mut request_line).expect("Failed to read first line.");
+        let mut request_line = request_line.trim().split(' ');
+        let mut request = Request::builder()
+           .with_method(request_line.next().ok_or_else(|| Error::from(InvalidMethod))?)
+           .with_uri(request_line.next().ok_or_else(|| Error::from(InvalidUri))?)
+           .with_version(request_line.next().ok_or_else(|| Error::from(InvalidVersion))?);
 
-        let request_header = request_lines.next()
-            .expect("Failed to read next line from request reader.")
-            .expect("There is no header line.");
-        let mut header_split = request_header.split(' ');
-  
-        let request = Request::builder()
-           .with_method(header_split.next().ok_or_else(|| Error::from(InvalidMethod))?)
-           .with_uri(header_split.next().ok_or_else(|| Error::from(InvalidUri))?)
-           .with_version(header_split.next().ok_or_else(|| Error::from(InvalidVersion))?)
-           .with_body("".to_string());
-       
-        request
+
+        // Parse the request's header lines
+        let mut header_line = String::new();
+        while let Ok(_) = bufreader.read_line(&mut header_line) {
+            println!("Parsing header line: {header_line}");
+            if header_line == "\r\n" {
+                break;
+            }
+            if let Some((name, val)) = header_line.trim().split_once(": ") {
+                request = request.with_header(name.as_bytes(), val.as_bytes());
+                header_line.clear();
+            } else {
+                panic!("Invalid header line");
+            }
+        }
+
+        // Parse the request's body
+        // let body = lines.map(|line| line.expect("")).collect::<Vec<_>>().join(" ");
+        request.with_body("".to_string())
     }
-    
 }
 
 
@@ -67,6 +82,12 @@ impl<T> Request<T> {
     #[inline]
     pub fn version(&self) -> &Version {
         &self.head.version
+    }
+
+    /// Returns the header-value for the specified header-name.
+    #[inline]
+    pub fn get_header(&self, name: &HeaderName) -> Option<&HeaderValue> {
+       self.head.headers.get(name)
     }
 
     /// Returns a reference to the body of the `Request`.

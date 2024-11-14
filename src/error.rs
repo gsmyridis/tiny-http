@@ -4,15 +4,18 @@ use crate::method::InvalidMethod;
 use crate::version::InvalidVersion;
 use crate::uri::InvalidUri;
 use crate::status::InvalidStatusCode;
+use crate::header::name::InvalidHeaderName;
 
 
 #[derive(Debug)]
 pub struct Error {
+    #[allow(dead_code)]
     inner: ErrorKind,
 }
 
 
 pub type Result<T> = result::Result<T, Error>;
+
 
 #[derive(Debug)]
 enum ErrorKind {
@@ -20,6 +23,7 @@ enum ErrorKind {
     Version(InvalidVersion),
     Uri(InvalidUri),
     StatusCode(InvalidStatusCode),
+    Header(InvalidHeaderName),
 }
 
 
@@ -47,5 +51,12 @@ impl From<InvalidUri> for Error {
 impl From<InvalidStatusCode> for Error {
     fn from(err: InvalidStatusCode) -> Error {
         Error{ inner: ErrorKind::StatusCode(err) }
+    }
+}
+
+
+impl From<InvalidHeaderName> for Error {
+    fn from(err: InvalidHeaderName) -> Error {
+        Error{ inner: ErrorKind::Header(err) }
     }
 }

@@ -1,5 +1,6 @@
 use crate::status::StatusCode;
 use crate::version::Version;
+use crate::header::HeaderMap;
 
 
 #[derive(Default)]
@@ -9,6 +10,9 @@ pub struct Parts {
 
     /// The response's version
     pub version: Version,
+    
+    /// Header-map
+    pub headers: HeaderMap, 
 
 }
 

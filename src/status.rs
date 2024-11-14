@@ -3,6 +3,7 @@ use std::convert::TryFrom;
 
 
 /// An HTTP status code.
+#[derive(Debug)]
 pub struct StatusCode(NonZeroU16);
 
 

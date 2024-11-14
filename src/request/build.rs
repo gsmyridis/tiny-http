@@ -4,6 +4,9 @@ use crate::method::Method;
 use crate::version::Version;
 use crate::uri::Uri;
 use crate::request::Request;
+use crate::body::Body;
+use crate::header::name::HeaderName;
+use crate::header::value::HeaderValue;
 
 
 /// An HTTP request builder
@@ -75,8 +78,25 @@ impl Builder {
         Builder{ inner }
     }
 
+    /// Inserts a pair of header-name and header-value to the `HeaderMap`.
+    pub fn with_header<N, V>(self, name: N, val: V) -> Self 
+        where
+            HeaderValue: From<V>,
+            HeaderName: TryFrom<N>,
+            <HeaderName as TryFrom<N>>::Error: Into<Error>,
+    {
+        let inner = self.inner.and_then(move |mut head| {
+            head.headers.insert(name, val)?;
+            Ok(head)
+        });
+
+        Builder{inner}
+    }
+
     /// Sets the body of the request that the `Builder` is constructing.
-    pub fn with_body<T>(self, body: T) -> Result<Request<T>> {
+    pub fn with_body<T: Body>(self, body: T) -> Result<Request<T>> {
+        // let len = body.content_len();
+        // let builder = self.with_header(b"Content-Length", b"{len}");
         self.inner.map(move |head| Request { head, body }) 
     }
 }

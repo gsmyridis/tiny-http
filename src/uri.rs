@@ -3,9 +3,16 @@ use std::fmt;
 use std::convert::TryFrom;
 
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Uri {
     pub inner: String,
+}
+
+
+impl PartialEq<str> for Uri {
+    fn eq(&self, other: &str) -> bool {
+        self.inner.as_str() == other
+    }
 }
 
 

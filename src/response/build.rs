@@ -3,8 +3,12 @@ use crate::error::{Error, Result};
 use crate::status::StatusCode;
 use crate::version::Version;
 use crate::response::Response;
+use crate::header::value::HeaderValue;
+use crate::header::name::HeaderName;
+use crate::body::Body;
 
 use std::convert::TryFrom;
+
 
 /// An HTTP response builder
 ///
@@ -59,12 +63,29 @@ impl Builder {
             Ok(head)
         });
 
-        Builder { inner }
+        Builder{inner}
+    }
+
+    /// Inserts a pair of header-name and header-value to the `HeaderMap`.
+    pub fn with_header<N, V>(self, name: N, val: V) -> Self 
+        where
+            HeaderValue: From<V>,
+            HeaderName: TryFrom<N>,
+            <HeaderName as TryFrom<N>>::Error: Into<Error>,
+    {
+        let inner = self.inner.and_then(move |mut head| {
+            head.headers.insert(name, val)?;
+            Ok(head)
+        });
+
+        Builder{inner}
     }
 
     /// Sets the body of the response that the `Builder` is constructing.
-    pub fn with_body<T>(self, body: T) -> Result<Response<T>> {
-        self.inner.map(move |head| Response { head, body })
+    pub fn with_body<T: Body>(self, body: T) -> Result<Response<T>> {
+        let len = format!("{}", body.content_len());
+        let builder = self.with_header(b"Content-Length", len.as_bytes());
+        builder.inner.map(move |head| Response { head, body })
     }
 
 }
