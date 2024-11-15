@@ -1,3 +1,6 @@
+pub mod pool;
+pub mod worker;
+
 use std::net::{TcpListener, ToSocketAddrs};
 use std::io;
 
@@ -14,3 +17,5 @@ impl HttpServer {
         Ok(Self { listener })
     }
 }
+
+
