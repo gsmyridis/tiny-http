@@ -9,57 +9,25 @@ pub mod body;
 pub mod method;
 pub mod request;
 
-use request::Request;
 use server::HttpServer;
+use request::Request;
 use response::Response;
 use error::Result;
 use header::name::HeaderName;
 
-use std::io::prelude::*;
-use std::net::TcpStream;
-
-
 
 fn main() {
 
-    let server = HttpServer::bind("localhost:4221")
-        .expect("Failed to bind to address");
-
-    for stream in server.listener.incoming() {
-        let stream = stream.expect("Failed to get connection");
-        handle_connection(stream);
-    }
-}
-
-
-fn handle_connection(mut stream: TcpStream) {
-
-    let request = Request::from_stream(&mut stream).unwrap();
-    println!("{:?}", request.method());
-    println!("{:?}", request.version());
-    println!("{:?}", request.uri());
-    println!("{:?}", request.body());
-
-    let response = if request.uri() == "/" {
-        route_home(request)
-    } else if request.uri().inner.starts_with("/echo/") {
-        route_echo(request)
-    } else if request.uri().inner.starts_with("/user-agent") {
-        route_user_agent(request)
-    } else {
-        route_error(request)
-    };
-
-    let response = response.expect("Failed to get response");
-    println!("");
-    println!("{:?}", response.version());
-    println!("{:?}", response.status());
-    println!("{:?}", response.headers());
-    println!("{:?}", response.body());
-
-    write!(stream, "{response}").expect("Failed to write response");
-    println!("{response}");
-
+    let _server = HttpServer::build()
+        .verbose(true)
+        .workers(4)
+        .route("/", route_home)
+        .route("/echo", route_echo)
+        .route("/user-agent", route_user_agent)
+        .route_err(route_error)
+        .bind("localhost:4221")
+        .expect("Failed to bind to address")
+        .run();
 }
 
 
@@ -100,5 +68,4 @@ fn route_error<T>(_: Request<T>) -> Result<Response<String>> {
         .with_header(b"Content-Type", b"text/plain")
         .with_body("Error!".to_string())
 }
-
 

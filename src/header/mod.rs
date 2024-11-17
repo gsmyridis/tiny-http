@@ -3,9 +3,10 @@ pub mod value;
 
 use std::collections::HashMap;
 
-use value::HeaderValue;
-use name::HeaderName;
+pub use name::HeaderName;
+pub use value::HeaderValue;
 use crate::error::{Error, Result};
+
 
 #[derive(Debug, Default)]
 pub struct HeaderMap {

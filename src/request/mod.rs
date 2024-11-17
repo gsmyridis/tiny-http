@@ -31,7 +31,7 @@ impl Request<()> {
     /// Creates a new `Request` from a TCP Stream.
     pub fn from_stream(stream: &mut TcpStream) -> Result<Request<String>> {
         let mut bufreader = BufReader::new(stream);
-        
+
         // Parse the reqeust's request line
         let mut request_line = String::new();
         bufreader.read_line(&mut request_line).expect("Failed to read first line.");
@@ -41,11 +41,9 @@ impl Request<()> {
            .with_uri(request_line.next().ok_or_else(|| Error::from(InvalidUri))?)
            .with_version(request_line.next().ok_or_else(|| Error::from(InvalidVersion))?);
 
-
         // Parse the request's header lines
         let mut header_line = String::new();
         while let Ok(_) = bufreader.read_line(&mut header_line) {
-            println!("Parsing header line: {header_line}");
             if header_line == "\r\n" {
                 break;
             }

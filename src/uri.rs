@@ -1,11 +1,27 @@
 use std::error::Error;
 use std::fmt;
 use std::convert::TryFrom;
+use std::hash::Hash;
 
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Uri {
     pub inner: String,
+}
+
+
+impl Uri {
+    /// Creates a new URI from a string reference, canonicalizing it.
+    ///
+    /// A canonical URI is one that starts with the prefix '/'.
+    #[inline]
+    pub fn new(uri: &str) -> Self {
+        if !uri.starts_with("/") {
+            Uri{ inner: format!("/{}", uri) }
+        } else {
+            Uri{ inner: uri.to_string() }
+        }
+    }
 }
 
 
@@ -21,6 +37,14 @@ impl Default for Uri {
         Uri { inner: "/".to_string() }
     }
 }
+
+
+impl fmt::Display for Uri {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.inner)
+    }
+}
+
 
 #[derive(Debug)]
 pub struct InvalidUri;

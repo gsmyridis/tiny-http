@@ -1,5 +1,6 @@
 use std::num::NonZeroU16;
 use std::convert::TryFrom;
+use std::fmt;
 
 
 /// An HTTP status code.
@@ -48,6 +49,14 @@ impl<'a> TryFrom<&'a str> for StatusCode {
     fn try_from(s: &'a str) -> Result<StatusCode, Self::Error> {
         let num = s.parse::<u16>().map_err(|_| InvalidStatusCode)?;
         StatusCode::try_from(num)
+    }
+}
+
+
+impl fmt::Display for StatusCode {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let reason = canonical_reason(self.0.into()).expect("Failed to get canonical reason");
+        write!(f, "{} {}", self.0, reason)
     }
 }
 

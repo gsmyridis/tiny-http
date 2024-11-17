@@ -7,10 +7,11 @@ use crate::server::worker::{Worker, Job};
 /// A structure representing a pool of worker threads that execute jobs.
 /// The pool has a fixed size to not overwhelm the system from too many
 /// requests.
+#[allow(dead_code)]
 pub struct ThreadPool {
-    pub size: usize,
-    pub workers: Vec<Worker>,
-    pub sender: Sender<Job>,
+    size: usize,
+    workers: Vec<Worker>,
+    sender: Sender<Job>,
 }
 
 
@@ -39,7 +40,7 @@ impl ThreadPool {
 
     /// Adds a closure to the queue of jobs, and will be executed by 
     /// one of the worker threads in the pool.
-    pub fn execute<F>(self, f: F) 
+    pub fn execute<F>(&self, f: F) 
         where F: FnOnce() + Send + 'static
     {
         let job = Box::new(f);
@@ -48,3 +49,10 @@ impl ThreadPool {
 
 }
 
+
+impl Default for ThreadPool {
+    #[inline]
+    fn default() -> Self {
+        ThreadPool::new(1)
+    }
+}

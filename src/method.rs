@@ -53,6 +53,13 @@ impl<'a> TryFrom<&'a str> for Method {
 }
 
 
+impl Display for Method {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+
 #[derive(Debug)]
 pub struct InvalidMethod;
 
