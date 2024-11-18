@@ -16,7 +16,7 @@ use crate::response::Response;
 use crate::error::Result;
 
 
-type RequestHandler<T> = fn(Request<T>) -> Result<Response<T>>;
+type Responder<T> = fn(&Request<T>) -> Result<Response<T>>;
 
 
 pub struct HttpServer {
@@ -58,9 +58,10 @@ fn route(mut stream: TcpStream, router: Arc<Router<String>>, verbose: bool) {
         println!("Body: {}", request.body());
     }
 
-    let handler = router.get_handler(request.uri())
-        .unwrap_or(router.error_handler.expect("No such path and no default error handler."));
-    let response = handler(request).expect("Failed to get response");
+    let response = match router.handle_request(&request) {
+        Ok(response) => response,
+        _ => router.handle_error(&request).expect("Guaranteed to get response")
+    };
 
     if verbose {
         println!("");
@@ -72,5 +73,4 @@ fn route(mut stream: TcpStream, router: Arc<Router<String>>, verbose: bool) {
     }
 
     write!(stream, "{response}").expect("Failed to write response");
-
 }
