@@ -3,9 +3,17 @@ use bytes::Bytes;
 
 
 /// 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct HeaderValue {
     inner: Bytes
+}
+
+impl HeaderValue {
+
+    /// Consumes the `HeaderValue` struct and return the value in `Bytes`.
+    pub fn as_bytes(&self) -> &Bytes {
+        &self.inner
+    }
 }
 
 impl<const N: usize> From<&[u8; N]> for HeaderValue {

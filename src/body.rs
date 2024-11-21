@@ -1,3 +1,5 @@
+use bytes::Bytes;
+
 // TODO: Create a macro that implements the trait trivially to
 // types that have a `len` method.
 
@@ -13,6 +15,12 @@ impl Body for String {
 }
 
 impl Body for &[u8] {
+    fn content_len(&self) -> usize {
+        self.len()
+    }
+}
+
+impl Body for Bytes {
     fn content_len(&self) -> usize {
         self.len()
     }

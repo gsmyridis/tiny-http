@@ -6,26 +6,24 @@ use std::sync::Arc;
 use crate::server::HttpServer;
 use crate::server::pool::ThreadPool;
 use crate::uri::Uri;
-use crate::server::{Router, Responder};
-use crate::request::Request;
-use crate::response::Response;
-use crate::error::Result;
+use crate::server::Router;
+use super::RequestHandler;
 
 
-pub struct Builder {
+pub struct Builder<T> {
     verbose: bool,
     workers: usize,
-    routes: HashMap<String, Responder<String>>,
-    error_handler: Option<Responder<String>>,
+    routes: HashMap<String, RequestHandler<T>>,
+    error_handler: Option<RequestHandler<T>>,
 }
 
-impl Default for Builder {
+impl<T> Default for Builder<T> {
     fn default() -> Self {
         Builder{  verbose: false, workers: 1, routes: HashMap::new(), error_handler: None }
     }
 }
 
-impl Builder {
+impl<T> Builder<T> {
 
     /// Turns on/off the verbose mode.
     #[inline]
@@ -44,7 +42,7 @@ impl Builder {
     /// A route is a request path and the corresponding functions that handles
     /// the request.
     #[inline]
-    pub fn route(mut self, path: &str, handler: Responder<String>) -> Self 
+    pub fn route(mut self, path: &str, handler: RequestHandler<T>) -> Self 
     {
         self.routes.insert(path.to_string(), handler);
         self
@@ -52,13 +50,13 @@ impl Builder {
 
     /// Sets the request error handler.
     #[inline]
-    pub fn route_err(self, handler: Responder<String>) -> Self {
+    pub fn route_err(self, handler: RequestHandler<T>) -> Self {
         Builder{ error_handler: Some(handler), ..self }
     }
 
     /// Consumes the builder and returns an HTTP server that listens to the specified
     /// address.
-    pub fn bind<A: ToSocketAddrs>(self, addr: A) -> io::Result<HttpServer> {
+    pub fn bind<A: ToSocketAddrs>(self, addr: A) -> io::Result<HttpServer<T>> {
         let listener = TcpListener::bind(addr)?;
         let pool = ThreadPool::new(self.workers);
         let routes = self.routes.into_iter()
@@ -67,18 +65,15 @@ impl Builder {
                 (uri, fun)
             })
             .collect::<HashMap<_, _>>();
-        let error_handler = self.error_handler.unwrap_or(default_error_handler);
+        let error_handler = self.error_handler.unwrap();
+        // let error_handler = self.error_handler.unwrap_or(|| { 
+        //         Response::builder()
+        //             .with_status(404)
+        //             .with_header(b"Content-Type", b"text/plain")
+        //             .with_body("Default Error Message!".to_string())
+        //     });
         let router = Arc::new(Router::from(routes, error_handler));
         Ok(HttpServer{ verbose: self.verbose, listener, pool, router })
     }
 
-}
-
-
-/// Routes request to 404.
-fn default_error_handler<T>(_: &Request<T>) -> Result<Response<String>> {
-    Response::builder()
-        .with_status(404)
-        .with_header(b"Content-Type", b"text/plain")
-        .with_body("Default Error Message!".to_string())
 }

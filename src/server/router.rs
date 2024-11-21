@@ -1,22 +1,22 @@
 use std::collections::HashMap;
 
 use crate::uri::Uri;
-use super::Responder;
 use crate::request::Request;
 use crate::response::Response;
 use crate::error::Result;
+use super::RequestHandler;
 
 
 pub struct Router<T> {
-    routes: HashMap<Uri, Responder<T>>,
-    error_handler: Responder<T>,
+    routes: HashMap<Uri, RequestHandler<T>>,
+    error_handler: RequestHandler<T>,
 }
 
 
 impl<T> Router<T> {
 
     /// Creates a new `Router` from a map between paths and request handles.
-    pub fn from(routes: HashMap<Uri, Responder<T>>, error_handler: Responder<T>) -> Self {
+    pub fn from(routes: HashMap<Uri, RequestHandler<T>>, error_handler: RequestHandler<T>) -> Self {
         Router{ routes, error_handler }
     }
 
@@ -31,35 +31,36 @@ impl<T> Router<T> {
         }
     }
 
+    /// Handle request in case of error.
+    pub fn handle_error(&self, request: &Request<T>) -> Result<Response<T>> {
+        (self.error_handler)(request)
+    }
+
     /// Gets the function that handles the request, for given path.
     ///
     /// The request handler
     /// Paths are expected to start with the prefix '/'.
-    fn get_handler(&self, path: &Uri) -> Option<Responder<T>> {
+    fn get_handler(&self, path: &Uri) -> Option<&RequestHandler<T>> {
         let mut handlers = Vec::new();
 
         if path == "/" {
             if let Some(root_handler) = self.routes.get(path) {
-                handlers.push(*root_handler);
+                handlers.push(root_handler);
             }
         } else {
             for (p, handler) in self.routes.iter() {
-                if path.inner.starts_with(&p.inner) & (p != "/") {
-                    handlers.push(*handler);
+                if path.inner.starts_with(&p.inner) && (p != "/") {
+                    handlers.push(handler);
                 } 
             }
         }
 
         match handlers.len() {
-            1 => Some(*handlers.get(0).expect("Guaranteed to have a handle")),
             0 => None,
-            _ => panic!("There are more than one paths matching the pattern")
+            1 => Some(handlers[0]),
+            // TODO: Maybe change the return type to Result with two reasons.
+            _ => panic!("There are more than one paths matching the pattern.")
         }
-    }
-
-    /// Handle request in case of error.
-    pub fn handle_error(&self, request: &Request<T>) -> Result<Response<T>> {
-        (self.error_handler)(request)
     }
 }
 
