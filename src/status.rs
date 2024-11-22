@@ -85,8 +85,7 @@ macro_rules! status_codes {
 
 
 status_codes! {
-    /// 200 OK
     (200, OK, "OK");
-    /// 404 NOT FOUND
+    (201, CREATED, "Created");
     (404, NOT_FOUND, "Not Found");
 }

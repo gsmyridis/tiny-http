@@ -4,7 +4,7 @@ use std::convert::TryFrom;
 use std::hash::Hash;
 
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Uri {
     pub inner: String,
 }

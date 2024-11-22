@@ -1,7 +1,7 @@
 pub mod build;
 pub mod parts;
 
-use std::io::{BufRead, BufReader};
+use std::io::{BufRead, Read, BufReader};
 use std::net::TcpStream;
 
 use parts::Parts;
@@ -10,8 +10,9 @@ use crate::method::{Method, InvalidMethod};
 use crate::version::{Version, InvalidVersion};
 use crate::uri::{Uri, InvalidUri};
 use crate::error::{Error, Result};
+use crate::error::InvalidBody;
 use crate::header::value::HeaderValue;
-use crate::header::name::HeaderName;
+use crate::header::name::{HeaderName, InvalidHeaderName};
 
 
 pub struct Request<T> {
@@ -32,7 +33,7 @@ impl Request<()> {
     pub fn from_stream(stream: &mut TcpStream) -> Result<Request<String>> {
         let mut bufreader = BufReader::new(stream);
 
-        // Parse the reqeust's request line
+        // Parse the request-line
         let mut request_line = String::new();
         bufreader.read_line(&mut request_line).expect("Failed to read first line.");
         let mut request_line = request_line.trim().split(' ');
@@ -41,13 +42,17 @@ impl Request<()> {
            .with_uri(request_line.next().ok_or_else(|| Error::from(InvalidUri))?)
            .with_version(request_line.next().ok_or_else(|| Error::from(InvalidVersion))?);
 
-        // Parse the request's header lines
+        // Parse the header lines
         let mut header_line = String::new();
+        let mut content_len = "0".to_string();
         while let Ok(_) = bufreader.read_line(&mut header_line) {
             if header_line == "\r\n" {
                 break;
             }
             if let Some((name, val)) = header_line.trim().split_once(": ") {
+                if name == "Content-Length" {
+                    content_len = val.to_string();
+                }
                 request = request.with_header(name.as_bytes(), val.as_bytes());
                 header_line.clear();
             } else {
@@ -56,8 +61,10 @@ impl Request<()> {
         }
 
         // Parse the request's body
-        // let body = lines.map(|line| line.expect("")).collect::<Vec<_>>().join(" ");
-        request.with_body("".to_string())
+        let len = content_len.parse::<usize>().map_err(|_| Error::from(InvalidHeaderName))?;
+        let mut body = vec![0_u8; len];
+        let _ = bufreader.read_exact(&mut body);
+        request.with_body(String::from_utf8(body).map_err(|_| Error::from(InvalidBody))?)
     }
 }
 

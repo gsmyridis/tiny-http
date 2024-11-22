@@ -6,6 +6,7 @@ use std::sync::Arc;
 use crate::server::HttpServer;
 use crate::server::pool::ThreadPool;
 use crate::uri::Uri;
+use crate::method::Method;
 use crate::server::Router;
 use super::RequestHandler;
 
@@ -13,7 +14,7 @@ use super::RequestHandler;
 pub struct Builder<T> {
     verbose: bool,
     workers: usize,
-    routes: HashMap<String, RequestHandler<T>>,
+    routes: HashMap<(String, Method), RequestHandler<T>>,
     error_handler: Option<RequestHandler<T>>,
 }
 
@@ -42,9 +43,12 @@ impl<T> Builder<T> {
     /// A route is a request path and the corresponding functions that handles
     /// the request.
     #[inline]
-    pub fn route(mut self, path: &str, handler: RequestHandler<T>) -> Self 
+    pub fn route(mut self, path: &str, method: Method, handler: RequestHandler<T>) -> Self 
     {
-        self.routes.insert(path.to_string(), handler);
+        // If the URI is not in the routes, create a hashmap <method, handelr> and add current one.
+        
+        // If the URI is there, then insert to the existing Uri
+        self.routes.insert((path.to_string(), method), handler);
         self
     }
 
@@ -60,9 +64,9 @@ impl<T> Builder<T> {
         let listener = TcpListener::bind(addr)?;
         let pool = ThreadPool::new(self.workers);
         let routes = self.routes.into_iter()
-            .map(|(path, fun)| {
+            .map(|((path, method), fun)| {
                 let uri = Uri::new(&path);
-                (uri, fun)
+                ((uri, method), fun)
             })
             .collect::<HashMap<_, _>>();
         let error_handler = self.error_handler.unwrap();

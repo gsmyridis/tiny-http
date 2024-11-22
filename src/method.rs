@@ -1,18 +1,19 @@
 use std::error::Error;
 use std::convert::TryFrom;
 use std::fmt::{self, Display, Formatter};
+use std::hash::Hash;
 
 use self::Inner::*;
 
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 enum Inner {
     Get,
     Post,
 }
 
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Method(Inner);
 
 impl Default for Method {

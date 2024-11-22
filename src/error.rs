@@ -16,6 +16,9 @@ pub struct Error {
 
 pub type Result<T> = result::Result<T, Error>;
 
+#[derive(Debug)]
+pub struct InvalidBody;
+
 
 #[derive(Debug)]
 enum ErrorKind {
@@ -24,6 +27,7 @@ enum ErrorKind {
     Uri(InvalidUri),
     StatusCode(InvalidStatusCode),
     Header(InvalidHeaderName),
+    Body(InvalidBody),
 }
 
 
@@ -58,5 +62,12 @@ impl From<InvalidStatusCode> for Error {
 impl From<InvalidHeaderName> for Error {
     fn from(err: InvalidHeaderName) -> Error {
         Error{ inner: ErrorKind::Header(err) }
+    }
+}
+
+
+impl From<InvalidBody> for Error {
+    fn from(err: InvalidBody) -> Error {
+        Error { inner: ErrorKind::Body(err) }
     }
 }
