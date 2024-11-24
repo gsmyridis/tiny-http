@@ -3,6 +3,7 @@ pub mod parts;
 
 use std::io::{BufRead, Read, BufReader};
 use std::net::TcpStream;
+use std::fmt;
 
 use parts::Parts;
 use build::Builder;
@@ -10,16 +11,15 @@ use crate::method::{Method, InvalidMethod};
 use crate::version::{Version, InvalidVersion};
 use crate::uri::{Uri, InvalidUri};
 use crate::error::{Error, Result};
-use crate::error::InvalidBody;
-use crate::header::value::HeaderValue;
-use crate::header::name::{HeaderName, InvalidHeaderName};
+use crate::header::{HeaderMap, HeaderValue, HeaderName, InvalidHeaderName};
+
+use bytes::Bytes;
 
 
 pub struct Request<T> {
     head: Parts,
     body: T,
 }
-
 
 impl Request<()> {
 
@@ -30,7 +30,7 @@ impl Request<()> {
     }
 
     /// Creates a new `Request` from a TCP Stream.
-    pub fn from_stream(stream: &mut TcpStream) -> Result<Request<String>> {
+    pub fn from_stream(stream: &mut TcpStream) -> Result<Request<Bytes>> {
         let mut bufreader = BufReader::new(stream);
 
         // Parse the request-line
@@ -64,7 +64,7 @@ impl Request<()> {
         let len = content_len.parse::<usize>().map_err(|_| Error::from(InvalidHeaderName))?;
         let mut body = vec![0_u8; len];
         let _ = bufreader.read_exact(&mut body);
-        request.with_body(String::from_utf8(body).map_err(|_| Error::from(InvalidBody))?)
+        request.with_body(Bytes::copy_from_slice(&body))
     }
 }
 
@@ -89,15 +89,36 @@ impl<T> Request<T> {
         &self.head.version
     }
 
-    /// Returns the header-value for the specified header-name.
+    /// Returns a reference to the Requet's `HeaderMap`.
     #[inline]
-    pub fn get_header(&self, name: &HeaderName) -> Option<&HeaderValue> {
-       self.head.headers.get(name)
+    pub fn headers(&self) -> &HeaderMap {
+        &self.head.headers
+    }
+
+    /// Returns the header-value for the specified header-name.
+    pub fn get_header<H>(&self, name: H) -> Option<&HeaderValue> 
+    where HeaderName: TryFrom<H>
+    {
+        let header_name = TryFrom::try_from(name).ok()?;
+        self.head.headers.get(&header_name)
     }
 
     /// Returns a reference to the body of the `Request`.
     #[inline]
     pub fn body(&self) -> &T {
         &self.body
+    }
+}
+
+
+impl<T> fmt::Display for Request<T> 
+where T: fmt::Display
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{} {} {}\r\n", self.method(), self.uri(), self.version())?;
+        for (name, val) in self.headers() {
+            write!(f, "{}: {}\r\n", name, val)?;
+        }
+        write!(f, "\r\n{}", self.body)
     }
 }

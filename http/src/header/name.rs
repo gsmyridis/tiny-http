@@ -73,6 +73,15 @@ impl TryFrom<&[u8]> for HeaderName {
 }
 
 
+impl TryFrom<&str> for HeaderName {
+    type Error = InvalidHeaderName;
+
+    fn try_from(s: &str) -> Result<Self, Self::Error> {
+        TryFrom::try_from(s.as_bytes())
+    }
+}
+
+
 impl fmt::Display for HeaderName {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(self.as_str())
@@ -85,5 +94,7 @@ standard_headers! {
     (ContentLength, CONTENT_LENGTH, b"Content-Length");
     (UserAgent, USER_AGENT, b"User-Agent");
     (Accept, ACCEPT, b"Accept");
+    (AcceptEncoding, ACCEPT_ENCODING, b"Accept-Encoding");
+    (ContentEncoding, CONTENT_ENCODING, b"Content-Encoding");
     (Host, HOST, b"Host");
 }

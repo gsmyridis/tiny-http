@@ -1,9 +1,9 @@
 pub mod name;
 pub mod value;
 
-use std::collections::HashMap;
+use std::collections::{hash_map, HashMap};
 
-pub use name::HeaderName;
+pub use name::{HeaderName, InvalidHeaderName};
 pub use value::HeaderValue;
 use crate::error::{Error, Result};
 
@@ -45,5 +45,31 @@ impl HeaderMap {
 }
 
 
+impl<'a> IntoIterator for &'a HeaderMap {
+    type Item = (&'a HeaderName, &'a HeaderValue);
+    type IntoIter = hash_map::Iter<'a, HeaderName, HeaderValue>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.inner.iter()
+    }
+}
 
 
+impl<'a> IntoIterator for &'a mut HeaderMap {
+    type Item = (&'a HeaderName, &'a mut HeaderValue);
+    type IntoIter = hash_map::IterMut<'a, HeaderName, HeaderValue>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.inner.iter_mut()
+    }
+}
+
+
+impl IntoIterator for HeaderMap {
+    type Item = (HeaderName, HeaderValue);
+    type IntoIter = hash_map::IntoIter<HeaderName, HeaderValue>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.inner.into_iter()
+    }
+}
