@@ -1,17 +1,15 @@
-use std::error::Error;
 use std::convert::TryFrom;
+use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::hash::Hash;
 
 use self::Inner::*;
-
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 enum Inner {
     Get,
     Post,
 }
-
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Method(Inner);
@@ -22,9 +20,7 @@ impl Default for Method {
     }
 }
 
-
 impl Method {
-
     // GET
     pub const GET: Method = Method(Get);
 
@@ -39,7 +35,6 @@ impl Method {
     }
 }
 
-
 impl<'a> TryFrom<&'a str> for Method {
     type Error = InvalidMethod;
 
@@ -48,11 +43,10 @@ impl<'a> TryFrom<&'a str> for Method {
         match t {
             "GET" => Ok(Method::GET),
             "POST" => Ok(Method::POST),
-            _ => Err(InvalidMethod)
+            _ => Err(InvalidMethod),
         }
     }
 }
-
 
 impl Display for Method {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
@@ -60,16 +54,13 @@ impl Display for Method {
     }
 }
 
-
 #[derive(Debug)]
 pub struct InvalidMethod;
 
 impl Display for InvalidMethod {
-
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "Invalid method")
     }
-
 }
 
 impl Error for InvalidMethod {}

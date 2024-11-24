@@ -1,14 +1,10 @@
-use crate::response::parts::Parts;
-use crate::error::{Error, Result};
-use crate::status::StatusCode;
-use crate::version::Version;
-use crate::response::Response;
-use crate::header::value::HeaderValue;
-use crate::header::name::HeaderName;
-use crate::body::Body;
-
-use std::convert::TryFrom;
-
+use crate::http::body::Body;
+use crate::http::error::{Error, Result};
+use crate::http::header::{HeaderName, HeaderValue};
+use crate::http::response::parts::Parts;
+use crate::http::response::Response;
+use crate::http::status::StatusCode;
+use crate::http::version::Version;
 
 /// An HTTP response builder
 ///
@@ -17,19 +13,16 @@ pub struct Builder {
     pub inner: Result<Parts>,
 }
 
-
 impl Default for Builder {
     #[inline]
     fn default() -> Self {
         Builder {
-            inner: Ok(Parts::new())
+            inner: Ok(Parts::new()),
         }
     }
 }
 
-
 impl Builder {
-    
     /// Creates a new default instance of `Builder` to construct a `Response`.
     #[inline]
     pub fn new() -> Self {
@@ -37,10 +30,10 @@ impl Builder {
     }
 
     /// Sets the status code of the response that the `Builder` is constructing.
-    pub fn with_status<T>(self, status: T) -> Self 
-        where
-            StatusCode: TryFrom<T>,
-            <StatusCode as TryFrom<T>>::Error: Into<Error> 
+    pub fn with_status<T>(self, status: T) -> Self
+    where
+        StatusCode: TryFrom<T>,
+        <StatusCode as TryFrom<T>>::Error: Into<Error>,
     {
         let inner = self.inner.and_then(move |mut head| {
             let status_code = TryFrom::try_from(status).map_err(Into::into)?;
@@ -48,14 +41,14 @@ impl Builder {
             Ok(head)
         });
 
-        Builder{inner}
+        Builder { inner }
     }
 
     /// Sets the HTTP version of the response that the `Builder` is constructing.
-    pub fn with_version<T>(self, version: T) -> Self 
-        where
-            Version: TryFrom<T>,
-            <Version as TryFrom<T>>::Error: Into<Error>
+    pub fn with_version<T>(self, version: T) -> Self
+    where
+        Version: TryFrom<T>,
+        <Version as TryFrom<T>>::Error: Into<Error>,
     {
         let inner = self.inner.and_then(move |mut head| {
             let version = TryFrom::try_from(version).map_err(Into::into)?;
@@ -63,22 +56,22 @@ impl Builder {
             Ok(head)
         });
 
-        Builder{inner}
+        Builder { inner }
     }
 
     /// Inserts a pair of header-name and header-value to the `HeaderMap`.
-    pub fn with_header<N, V>(self, name: N, val: V) -> Self 
-        where
-            HeaderValue: From<V>,
-            HeaderName: TryFrom<N>,
-            <HeaderName as TryFrom<N>>::Error: Into<Error>,
+    pub fn with_header<N, V>(self, name: N, val: V) -> Self
+    where
+        HeaderValue: From<V>,
+        HeaderName: TryFrom<N>,
+        <HeaderName as TryFrom<N>>::Error: Into<Error>,
     {
         let inner = self.inner.and_then(move |mut head| {
             head.headers.insert(name, val)?;
             Ok(head)
         });
 
-        Builder{inner}
+        Builder { inner }
     }
 
     /// Sets the body of the response that the `Builder` is constructing.
@@ -87,5 +80,4 @@ impl Builder {
         let builder = self.with_header(b"Content-Length", len.as_bytes());
         builder.inner.map(move |head| Response { head, body })
     }
-
 }

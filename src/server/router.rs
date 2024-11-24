@@ -1,34 +1,33 @@
 use std::collections::HashMap;
 
-use crate::uri::Uri;
-use crate::request::Request;
-use crate::response::Response;
-use crate::error::Result;
-use crate::method::Method;
 use super::RequestHandler;
-
+use crate::http::{Method, Request, Response, Result, Uri};
 
 pub struct Router<T> {
     routes: HashMap<(Uri, Method), RequestHandler<T>>,
     error_handler: RequestHandler<T>,
 }
 
-
 impl<T> Router<T> {
-
     /// Creates a new `Router` from a map between paths and request handles.
-    pub fn from(routes: HashMap<(Uri, Method), RequestHandler<T>>, error_handler: RequestHandler<T>) -> Self {
-        Router{ routes, error_handler }
+    pub fn from(
+        routes: HashMap<(Uri, Method), RequestHandler<T>>,
+        error_handler: RequestHandler<T>,
+    ) -> Self {
+        Router {
+            routes,
+            error_handler,
+        }
     }
 
     /// Handles the request.
     ///
-    /// The request is hanled based on the specified routes. In case of an error
+    /// The request is handled based on the specified routes. In case of an error
     /// the request is handled with the `Router`'s specified error handler.
     pub fn handle_request(&self, request: &Request<T>) -> Result<Response<T>> {
         match self.get_handler(request.uri(), request.method()) {
             Some(handler) => handler(request),
-            None => self.handle_error(request)
+            None => self.handle_error(request),
         }
     }
 
@@ -50,9 +49,9 @@ impl<T> Router<T> {
             }
         } else {
             for ((p, m), handler) in self.routes.iter() {
-                if path.inner.starts_with(&p.inner) && (p != "/") && method == m{
+                if path.inner.starts_with(&p.inner) && (p != "/") && method == m {
                     handlers.push(handler);
-                } 
+                }
             }
         }
 
@@ -60,8 +59,7 @@ impl<T> Router<T> {
             0 => None,
             1 => Some(handlers[0]),
             // TODO: Maybe change the return type to Result with two reasons.
-            _ => panic!("There are more than one paths matching the pattern.")
+            _ => panic!("There are more than one paths matching the pattern."),
         }
     }
 }
-

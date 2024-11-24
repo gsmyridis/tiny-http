@@ -1,7 +1,4 @@
-use crate::method::Method;
-use crate::version::Version;
-use crate::uri::Uri;
-use crate::header::HeaderMap;
+use crate::http::{HeaderMap, Method, Uri, Version};
 
 #[derive(Default)]
 pub struct Parts {
@@ -16,9 +13,7 @@ pub struct Parts {
 
     /// The request's headers
     pub headers: HeaderMap,
-
 }
-
 
 impl Parts {
     #[inline]

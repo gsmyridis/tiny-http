@@ -1,29 +1,30 @@
+use std::convert::TryFrom;
 use std::error::Error;
 use std::fmt;
-use std::convert::TryFrom;
 use std::hash::Hash;
-
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Uri {
     pub inner: String,
 }
 
-
 impl Uri {
-    /// Creates a new URI from a string reference, canonicalizing it.
+    /// Creates a new, canonicalized URI from a string reference.
     ///
     /// A canonical URI is one that starts with the prefix '/'.
     #[inline]
     pub fn new(uri: &str) -> Self {
         if !uri.starts_with("/") {
-            Uri{ inner: format!("/{}", uri) }
+            Uri {
+                inner: format!("/{}", uri),
+            }
         } else {
-            Uri{ inner: uri.to_string() }
+            Uri {
+                inner: uri.to_string(),
+            }
         }
     }
 }
-
 
 impl PartialEq<str> for Uri {
     fn eq(&self, other: &str) -> bool {
@@ -31,13 +32,13 @@ impl PartialEq<str> for Uri {
     }
 }
 
-
 impl Default for Uri {
     fn default() -> Self {
-        Uri { inner: "/".to_string() }
+        Uri {
+            inner: "/".to_string(),
+        }
     }
 }
-
 
 impl fmt::Display for Uri {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -45,26 +46,23 @@ impl fmt::Display for Uri {
     }
 }
 
-
 #[derive(Debug)]
 pub struct InvalidUri;
 
-
 impl fmt::Display for InvalidUri {
-
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str("Invalid Uri")
     }
 }
 
-
 impl Error for InvalidUri {}
-
 
 impl<'a> TryFrom<&'a str> for Uri {
     type Error = InvalidUri;
 
     fn try_from(t: &'a str) -> Result<Self, Self::Error> {
-        Ok(Uri {inner: t.to_string() })
+        Ok(Uri {
+            inner: t.to_string(),
+        })
     }
 }

@@ -25,4 +25,3 @@ impl Body for Bytes {
         self.len()
     }
 }
-

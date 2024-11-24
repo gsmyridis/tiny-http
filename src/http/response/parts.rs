@@ -1,7 +1,6 @@
-use crate::status::StatusCode;
-use crate::version::Version;
-use crate::header::HeaderMap;
-
+use crate::http::header::HeaderMap;
+use crate::http::status::StatusCode;
+use crate::http::version::Version;
 
 #[derive(Default)]
 pub struct Parts {
@@ -10,12 +9,10 @@ pub struct Parts {
 
     /// The response's version
     pub version: Version,
-    
+
     /// Header-map
-    pub headers: HeaderMap, 
-
+    pub headers: HeaderMap,
 }
-
 
 impl Parts {
     #[inline]

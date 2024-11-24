@@ -1,14 +1,12 @@
-use std::fmt;
 use bytes::Bytes;
-
+use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct HeaderValue {
-    inner: Bytes
+    inner: Bytes,
 }
 
 impl HeaderValue {
-
     /// Consumes the `HeaderValue` struct and return the value in `Bytes`.
     pub fn as_bytes(&self) -> &Bytes {
         &self.inner
@@ -17,19 +15,25 @@ impl HeaderValue {
 
 impl<const N: usize> From<&[u8; N]> for HeaderValue {
     fn from(slice: &[u8; N]) -> Self {
-        Self{inner: Bytes::copy_from_slice(slice) }
+        Self {
+            inner: Bytes::copy_from_slice(slice),
+        }
     }
 }
 
 impl From<&[u8]> for HeaderValue {
     fn from(slice: &[u8]) -> Self {
-        Self{inner: Bytes::copy_from_slice(slice) }
+        Self {
+            inner: Bytes::copy_from_slice(slice),
+        }
     }
 }
 
 impl From<&str> for HeaderValue {
     fn from(slice: &str) -> Self {
-        Self{ inner: Bytes::copy_from_slice(slice.as_bytes()) }
+        Self {
+            inner: Bytes::copy_from_slice(slice.as_bytes()),
+        }
     }
 }
 
@@ -38,5 +42,3 @@ impl fmt::Display for HeaderValue {
         write!(f, "{}", String::from_utf8_lossy(self.inner.as_ref()))
     }
 }
-
-
