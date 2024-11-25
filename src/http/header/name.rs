@@ -87,6 +87,22 @@ standard_headers! {
     (UserAgent, USER_AGENT, b"User-Agent");
     (Accept, ACCEPT, b"Accept");
     (AcceptEncoding, ACCEPT_ENCODING, b"Accept-Encoding");
+    (AcceptLanguage, ACCEPT_LANGUAGE, b"Accept-Language");
+    (Authorization, AUTHORIZATION, b"Authorezation");
+    (Connection, CONNECTION, b"Connection");
     (ContentEncoding, CONTENT_ENCODING, b"Content-Encoding");
+    (CacheControl, CACHE_CONTROL, b"Cache-Control");
+    (Cookie, COOKIE, b"Cookie");
     (Host, HOST, b"Host");
+    (Origin, ORIGIN, b"Origin");
+    (Referer, REFERER, b"Referer");
+    (SecChUa, SEC_CH_UA, b"sec-ch-ua");
+    (SecChUaMobile, SEC_CH_UA_MOBILE, b"sec-ch-ua-mobile");
+    (SecChUaPlatform, SEC_CH_UA_PLATFORM, b"sec-ch-ua-platform");
+    (SecFetchDest, SEC_FETCH_DEST, b"Sec-Fetch-Dest");
+    (SecFetchMode, SEC_FETCH_MODE, b"Sec-Fetch-Mode");
+    (SecFetchSite, SEC_FETCH_SITE, b"Sec-Fetch-Site");
+    (SecFetchUser, SEC_FETCH_USER, b"Sec-Fetch-User");
+    (SecGpc, SEC_GPC, b"Sec-GPC");
+    (UpgradeInsecureRequests, UPGRADE_INSECURE_REQUESTS, b"Upgrade-Insecure-Requests");
 }

@@ -18,7 +18,7 @@ fn main() {
                     .map_err(|_| Error::from(InvalidUri))?;
                 Response::builder()
                     .with_status(200)
-                    .with_header("Content-Type", b"application/octet-stream")
+                    .with_header("Content-Type", b"text/html")
                     .with_body(Bytes::from(file_content))
             }),
         )
@@ -29,14 +29,18 @@ fn main() {
 }
 
 fn route_home(_: &Request<Bytes>) -> Result<Response<Bytes>> {
+    let home = read_to_string("examples/files/home.html")
+        .expect("Failed to read file.");
     Response::builder()
         .with_status(200)
-        .with_body(Bytes::from(""))
+        .with_body(Bytes::from(home))
 }
 
 fn route_error(_: &Request<Bytes>) -> Result<Response<Bytes>> {
+    let err = read_to_string("examples/files/error.html")
+        .expect("Failed to read file.");
     Response::builder()
         .with_status(404)
-        .with_header("Content-Type", b"text/plain")
-        .with_body(Bytes::from("Error!"))
+        .with_header("Content-Type", b"text/html")
+        .with_body(Bytes::from(err))
 }

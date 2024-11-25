@@ -64,7 +64,7 @@ impl Request<()> {
                 request = request.with_header(name.as_bytes(), val.as_bytes());
                 header_line.clear();
             } else {
-                panic!("Invalid header line");
+                panic!("Invalid header line {header_line}");
             }
         }
 

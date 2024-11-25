@@ -39,7 +39,8 @@ impl HttpServer<Bytes> {
             let mut stream = stream.expect("Failed to get connection");
             let router = Arc::clone(&self.router);
             self.pool.execute(move || {
-                let request = Request::from_stream(&mut stream).unwrap();
+                let request = Request::from_stream(&mut stream)
+                    .expect("Failed to parse request from stream.");
                 let response = match router.handle_request(&request) {
                     Ok(response) => response,
                     _ => router
@@ -67,3 +68,4 @@ impl HttpServer<Bytes> {
         }
     }
 }
+
