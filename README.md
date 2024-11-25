@@ -6,7 +6,7 @@
 The library is incomplete, and its goal is educational.
 Specifically, I believe it is a good, but not perfect, example of how to design a 
 library, in a Rust idiomatic way, and learn concepts around HTTP servers.
-Its tiny size modularity make the library easy to read, understand and extend.
+Its tiny size and modularity make the library easy to read, understand and extend.
 
 To demonstrate how simple it is to make the library more complete and usable, here is an example.
 At its current iteration, the library does not support all valid headers, but it takes virtually no time to add one.
