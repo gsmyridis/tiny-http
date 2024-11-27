@@ -8,9 +8,8 @@ use crate::server::worker::{Job, Worker};
 /// requests.
 #[allow(dead_code)]
 pub struct ThreadPool {
-    size: usize,
     workers: Vec<Worker>,
-    sender: Sender<Job>,
+    sender: Option<Sender<Job>>,
 }
 
 impl ThreadPool {
@@ -33,9 +32,8 @@ impl ThreadPool {
             workers.push(Worker::new(id, Arc::clone(&receiver)));
         }
         ThreadPool {
-            size,
             workers,
-            sender,
+            sender: Some(sender),
         }
     }
 
@@ -46,7 +44,10 @@ impl ThreadPool {
         F: FnOnce() + Send + 'static,
     {
         let job = Box::new(f);
-        self.sender.send(job).expect("Execution of job failed.");
+        self.sender.as_ref()
+            .expect("There is no sender.")
+            .send(job)
+            .expect("Execution of job failed.");
     }
 }
 
@@ -54,5 +55,19 @@ impl Default for ThreadPool {
     #[inline]
     fn default() -> Self {
         ThreadPool::new(1)
+    }
+}
+
+
+impl Drop for ThreadPool {
+    fn drop(&mut self) {
+        drop(self.sender.take());
+
+        for worker in &mut self.workers {
+            println!("Worker {} is shutting down", worker.id);
+            if let Some(handle) = worker.handle.take() {
+                handle.join().expect("Failed to join thread handle");
+            }
+        }
     }
 }
