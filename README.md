@@ -131,6 +131,7 @@ You can run the example server included in the `examples` directory of the libra
 ```
 cargo run --example example_server
 ```
+and follow the instructions.
 
 ## Improvements
 
@@ -146,5 +147,5 @@ Here are a few ideas:
 - [ ] Work on error handling.
 - [ ] Add tests.
 - [ ] Improve `Router`.
-- [ ] Add graceful shutdown.
+- [x] Add graceful shutdown.
 - [ ] Add compression in the `HttpServer`, not the `Handler`.

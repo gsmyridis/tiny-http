@@ -5,8 +5,8 @@ use bytes::Bytes;
 use std::fs::read_to_string;
 
 fn main() {
-
-    HttpServer::build()
+    
+    let server = HttpServer::build()
         .workers(4)
         .route("/", Method::GET, Box::new(route_home))
         .route(
@@ -24,8 +24,10 @@ fn main() {
         )
         .route_err(Box::new(route_error))
         .bind("localhost:4221")
-        .expect("Failed to bind to address")
-        .run();
+        .expect("Failed to bind to address");
+
+    println!("\nOpen your browser and visit http://localhost:4221");
+    server.run();
 }
 
 fn route_home(_: &Request<Bytes>) -> Result<Response<Bytes>> {
