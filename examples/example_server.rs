@@ -1,4 +1,5 @@
-use tiny_http::http::{Error, Result, Method, Request, Response, InvalidUri};
+use tiny_http::error::{Error, Result, InvalidUri};
+use tiny_http::http::{Request, Response};
 use tiny_http::server::HttpServer;
 
 use bytes::Bytes;
@@ -8,10 +9,10 @@ fn main() {
     
     let server = HttpServer::build()
         .workers(4)
-        .route("/", Method::GET, Box::new(route_home))
+        .route("/", "GET", Box::new(route_home))
         .route(
             "/files",
-            Method::GET,
+            "GET",
             Box::new(move |request: &Request<Bytes>| {
                 let filename = request.uri().inner.chars().skip(7).collect::<String>();
                 let file_content = read_to_string(format!("examples/files/{filename}"))

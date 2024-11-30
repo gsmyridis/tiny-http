@@ -1,10 +1,6 @@
-use crate::http::body::Body;
-use crate::http::error::{Error, Result};
-use crate::http::header::{HeaderName, HeaderValue};
-use crate::http::response::parts::Parts;
-use crate::http::response::Response;
-use crate::http::status::StatusCode;
-use crate::http::version::Version;
+use crate::error::{Error, Result};
+use crate::http::{Body, HeaderName, HeaderValue, Response, StatusCode, Version};
+use super::parts::Parts;
 
 /// An HTTP response builder
 ///

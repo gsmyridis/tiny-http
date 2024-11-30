@@ -1,11 +1,6 @@
-use crate::http::body::Body;
-use crate::http::error::{Error, Result};
-use crate::http::header::{HeaderName, HeaderValue};
-use crate::http::method::Method;
-use crate::http::request::parts::Parts;
-use crate::http::request::Request;
-use crate::http::uri::Uri;
-use crate::http::version::Version;
+use crate::error::{Error, Result};
+use crate::http::{Body, HeaderName, HeaderValue, Method, Request, Uri, Version};
+use super::parts::Parts;
 
 /// An HTTP request builder
 ///
@@ -55,7 +50,7 @@ impl Builder {
             head.uri = uri;
             Ok(head)
         });
-        Builder { inner }
+        Self{ inner }
     }
 
     /// Sets the HTTP version of the request that the `Builder` is constructing.
@@ -69,7 +64,7 @@ impl Builder {
             head.version = version;
             Ok(head)
         });
-        Builder { inner }
+        Self{ inner }
     }
 
     /// Inserts a pair of header-name and header-value to the `HeaderMap`.
@@ -83,14 +78,12 @@ impl Builder {
             head.headers.insert(name, val)?;
             Ok(head)
         });
-
-        Builder { inner }
+        Self{ inner }
     }
 
     /// Sets the body of the request that the `Builder` is constructing.
+    #[inline]
     pub fn with_body<T: Body>(self, body: T) -> Result<Request<T>> {
-        // let len = body.content_len();
-        // let builder = self.with_header(b"Content-Length", b"{len}");
         self.inner.map(move |head| Request { head, body })
     }
 }

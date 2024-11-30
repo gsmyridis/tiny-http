@@ -1,8 +1,8 @@
 pub mod name;
 pub mod value;
 
-use crate::http::error::{Error, Result};
-pub use name::{HeaderName, InvalidHeaderName};
+use crate::error::{Error, Result};
+pub use name::HeaderName;
 pub use value::HeaderValue;
 
 use std::collections::{hash_map, HashMap};

@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
 use super::RequestHandler;
-use crate::http::{Method, Request, Response, Result, Uri};
+use crate::http::{Method, Request, Response, Uri};
+use crate::error::Result;
 
 pub struct Router<T> {
     routes: HashMap<(Uri, Method), RequestHandler<T>>,

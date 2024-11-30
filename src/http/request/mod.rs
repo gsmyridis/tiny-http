@@ -5,11 +5,8 @@ use std::fmt;
 use std::io::{BufRead, BufReader, Read};
 use std::net::TcpStream;
 
-use crate::http::error::{Error, Result};
-use crate::http::header::{HeaderMap, HeaderName, HeaderValue, InvalidHeaderName};
-use crate::http::method::{InvalidMethod, Method};
-use crate::http::uri::{InvalidUri, Uri};
-use crate::http::version::{InvalidVersion, Version};
+use crate::http::*;
+use crate::error::*;
 use build::Builder;
 use parts::Parts;
 

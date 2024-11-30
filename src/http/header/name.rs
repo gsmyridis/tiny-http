@@ -2,14 +2,12 @@ use std::convert::TryFrom;
 use std::fmt;
 use std::hash::Hash;
 
+use crate::error::InvalidHeaderName;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct HeaderName {
     inner: StandardHeader,
 }
-
-/// Error for bytes that don't correspond to a valid header.
-#[derive(Debug)]
-pub struct InvalidHeaderName;
 
 macro_rules! standard_headers {
     (

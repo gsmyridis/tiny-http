@@ -1,14 +1,7 @@
 use std::convert::TryFrom;
 use std::fmt;
 
-#[derive(Debug)]
-pub struct InvalidVersion;
-
-impl fmt::Display for InvalidVersion {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str("Invalid Version")
-    }
-}
+use crate::error::InvalidVersion;
 
 #[derive(Debug)]
 enum Http {

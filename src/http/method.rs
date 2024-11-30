@@ -1,8 +1,8 @@
 use std::convert::TryFrom;
-use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::hash::Hash;
 
+use crate::error::InvalidMethod;
 use self::Inner::*;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -53,14 +53,3 @@ impl Display for Method {
         f.write_str(self.as_str())
     }
 }
-
-#[derive(Debug)]
-pub struct InvalidMethod;
-
-impl Display for InvalidMethod {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "Invalid method")
-    }
-}
-
-impl Error for InvalidMethod {}

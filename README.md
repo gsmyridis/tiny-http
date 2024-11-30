@@ -108,13 +108,13 @@ use tiny_http::http::Method;
 use tiny_http::server::HttpServer;
 
 let server = HttpServer::builder()
-                    .worker(4)
+                    .workers(4)
                     .route(
                        "/", 
-                       Method::GET, 
+                       "GET", 
                        Box::new(|_|: &Request<Bytes>| 
                             Response::builder()
-                            .with_body(Bytes::from(""))
+                            .with_body(Bytes::from("BuYaKaSha main man."))
                             .expect("Failed to build response.")
                     ))
                     .bind("http://localhost:4242")

@@ -1,7 +1,8 @@
 use std::convert::TryFrom;
-use std::error::Error;
 use std::fmt;
 use std::hash::Hash;
+
+use crate::error::InvalidUri;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Uri {
@@ -46,17 +47,6 @@ impl fmt::Display for Uri {
     }
 }
 
-#[derive(Debug)]
-pub struct InvalidUri;
-
-impl fmt::Display for InvalidUri {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str("Invalid Uri")
-    }
-}
-
-impl Error for InvalidUri {}
-
 impl<'a> TryFrom<&'a str> for Uri {
     type Error = InvalidUri;
 
@@ -66,3 +56,4 @@ impl<'a> TryFrom<&'a str> for Uri {
         })
     }
 }
+

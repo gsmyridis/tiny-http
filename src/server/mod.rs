@@ -3,7 +3,7 @@ pub mod pool;
 pub mod router;
 pub mod worker;
 
-use std::io::prelude::*;
+use std::io::Write;
 use std::net::TcpListener;
 use std::sync::Arc;
 
@@ -13,9 +13,8 @@ use build::Builder;
 use pool::ThreadPool;
 use router::Router;
 
-use crate::http::error::Result;
-use crate::http::request::Request;
-use crate::http::response::Response;
+use crate::error::Result;
+use crate::http::{Request, Response};
 
 type RequestHandler<T> = Box<dyn Fn(&Request<T>) -> Result<Response<T>> + Send + Sync + 'static>;
 

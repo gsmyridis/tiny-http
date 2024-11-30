@@ -2,13 +2,11 @@ use std::convert::TryFrom;
 use std::fmt;
 use std::num::NonZeroU16;
 
+use crate::error::InvalidStatusCode;
+
 /// An HTTP status code.
 #[derive(Debug)]
 pub struct StatusCode(NonZeroU16);
-
-/// Error for invalid status code.
-#[derive(Debug)]
-pub struct InvalidStatusCode;
 
 impl Default for StatusCode {
     fn default() -> Self {
