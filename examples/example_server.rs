@@ -1,4 +1,4 @@
-use tiny_http::error::{Error, Result, InvalidUri};
+use tiny_http::error::{Error, InvalidUri, Result};
 use tiny_http::http::{Request, Response};
 use tiny_http::server::HttpServer;
 
@@ -6,7 +6,6 @@ use bytes::Bytes;
 use std::fs::read_to_string;
 
 fn main() {
-    
     let server = HttpServer::build()
         .workers(4)
         .route("/", "GET", Box::new(route_home))
@@ -32,16 +31,14 @@ fn main() {
 }
 
 fn route_home(_: &Request<Bytes>) -> Result<Response<Bytes>> {
-    let home = read_to_string("examples/files/home.html")
-        .expect("Failed to read file.");
+    let home = read_to_string("examples/files/home.html").expect("Failed to read file.");
     Response::builder()
         .with_status(200)
         .with_body(Bytes::from(home))
 }
 
 fn route_error(_: &Request<Bytes>) -> Result<Response<Bytes>> {
-    let err = read_to_string("examples/files/error.html")
-        .expect("Failed to read file.");
+    let err = read_to_string("examples/files/error.html").expect("Failed to read file.");
     Response::builder()
         .with_status(404)
         .with_header("Content-Type", b"text/html")

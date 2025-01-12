@@ -1,6 +1,6 @@
+use super::parts::Parts;
 use crate::error::{Error, Result};
 use crate::http::{Body, HeaderName, HeaderValue, Method, Request, Uri, Version};
-use super::parts::Parts;
 
 /// An HTTP request builder
 ///
@@ -50,7 +50,7 @@ impl Builder {
             head.uri = uri;
             Ok(head)
         });
-        Self{ inner }
+        Self { inner }
     }
 
     /// Sets the HTTP version of the request that the `Builder` is constructing.
@@ -64,7 +64,7 @@ impl Builder {
             head.version = version;
             Ok(head)
         });
-        Self{ inner }
+        Self { inner }
     }
 
     /// Inserts a pair of header-name and header-value to the `HeaderMap`.
@@ -78,7 +78,7 @@ impl Builder {
             head.headers.insert(name, val)?;
             Ok(head)
         });
-        Self{ inner }
+        Self { inner }
     }
 
     /// Sets the body of the request that the `Builder` is constructing.

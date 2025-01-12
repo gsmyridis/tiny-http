@@ -44,7 +44,8 @@ impl ThreadPool {
         F: FnOnce() + Send + 'static,
     {
         let job = Box::new(f);
-        self.sender.as_ref()
+        self.sender
+            .as_ref()
             .expect("There is no sender.")
             .send(job)
             .expect("Execution of job failed.");
@@ -57,7 +58,6 @@ impl Default for ThreadPool {
         ThreadPool::new(1)
     }
 }
-
 
 impl Drop for ThreadPool {
     fn drop(&mut self) {

@@ -3,8 +3,8 @@ use std::net::{TcpListener, ToSocketAddrs};
 use std::sync::Arc;
 
 use super::RequestHandler;
+use crate::error::{Error, FailedConnection, NoErrorHandler, Result};
 use crate::http::{Method, Uri};
-use crate::error::{Error, Result, FailedConnection, NoErrorHandler};
 use crate::server::{pool::ThreadPool, HttpServer, Router};
 
 pub struct Builder<T> {
@@ -14,8 +14,8 @@ pub struct Builder<T> {
 impl<T> Default for Builder<T> {
     #[inline]
     fn default() -> Self {
-        Builder{ 
-            inner: Ok(Parts::default()) 
+        Builder {
+            inner: Ok(Parts::default()),
         }
     }
 }
@@ -28,7 +28,7 @@ impl<T> Builder<T> {
             parts.workers = size;
             Ok(parts)
         });
-        Self{ inner }
+        Self { inner }
     }
 
     /// Adds a route.
@@ -37,18 +37,19 @@ impl<T> Builder<T> {
     /// the request.
     #[inline]
     pub fn route<P, M>(self, path: P, method: M, handler: RequestHandler<T>) -> Self
-    where Uri: TryFrom<P>,
-          Method: TryFrom<M>,
-          <Uri as TryFrom<P>>::Error: Into<Error>,
-          <Method as TryFrom<M>>::Error: Into<Error>,
+    where
+        Uri: TryFrom<P>,
+        Method: TryFrom<M>,
+        <Uri as TryFrom<P>>::Error: Into<Error>,
+        <Method as TryFrom<M>>::Error: Into<Error>,
     {
         let inner = self.inner.and_then(move |mut parts| {
             let uri = TryFrom::try_from(path).map_err(Into::into)?;
             let method = TryFrom::try_from(method).map_err(Into::into)?;
             parts.routes.insert((uri, method), handler);
-            Ok(parts) 
+            Ok(parts)
         });
-        Self{ inner }
+        Self { inner }
     }
 
     /// Sets the request error handler.
@@ -58,7 +59,7 @@ impl<T> Builder<T> {
             parts.error_handler = Some(handler);
             Ok(parts)
         });
-        Self{ inner }
+        Self { inner }
     }
 
     /// Consumes the builder and returns an HTTP server that listens to the specified
@@ -71,7 +72,7 @@ impl<T> Builder<T> {
             let router = Arc::new(Router::from(parts.routes, error_handler));
             Ok((pool, router))
         })?;
-        
+
         Ok(HttpServer {
             listener,
             pool,
@@ -80,14 +81,11 @@ impl<T> Builder<T> {
     }
 }
 
-
-
 struct Parts<T> {
     workers: usize,
     routes: HashMap<(Uri, Method), RequestHandler<T>>,
     error_handler: Option<RequestHandler<T>>,
 }
-
 
 impl<T> Default for Parts<T> {
     #[inline]

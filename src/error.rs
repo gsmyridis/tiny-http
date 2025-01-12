@@ -43,5 +43,4 @@ create_errors! {
     (ErrorHandler, NoErrorHandler);
 }
 
-pub type Result<T> = result::Result<T, Error>; 
-
+pub type Result<T> = result::Result<T, Error>;

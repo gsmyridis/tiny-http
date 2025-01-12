@@ -35,7 +35,7 @@ impl Worker {
                 Ok(job) => {
                     // println!("Worker {id} received a request. Responding...");
                     job();
-                },
+                }
                 Err(_) => {
                     println!("Worker {id} disconnected. Shutting down...");
                     break;
@@ -43,6 +43,9 @@ impl Worker {
             }
         });
 
-        Self { id, handle: Some(handle) }
+        Self {
+            id,
+            handle: Some(handle),
+        }
     }
 }

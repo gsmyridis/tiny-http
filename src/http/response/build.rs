@@ -1,6 +1,6 @@
+use super::parts::Parts;
 use crate::error::{Error, Result};
 use crate::http::{Body, HeaderName, HeaderValue, Response, StatusCode, Version};
-use super::parts::Parts;
 
 /// An HTTP response builder
 ///

@@ -5,8 +5,8 @@ use std::fmt;
 use std::io::{BufRead, BufReader, Read};
 use std::net::TcpStream;
 
-use crate::http::*;
 use crate::error::*;
+use crate::http::*;
 use build::Builder;
 use parts::Parts;
 

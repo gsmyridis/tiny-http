@@ -56,4 +56,3 @@ impl<'a> TryFrom<&'a str> for Uri {
         })
     }
 }
-
