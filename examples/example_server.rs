@@ -23,7 +23,7 @@ fn main() {
             }),
         )
         .route_err(Box::new(route_error))
-        .bind("localhost:4221")
+        .bind("0.0.0.0:4221")
         .expect("Failed to bind to address");
 
     println!("\nOpen your browser and visit http://localhost:4221.\n");
