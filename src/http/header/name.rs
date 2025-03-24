@@ -91,8 +91,13 @@ standard_headers! {
     (ContentEncoding, CONTENT_ENCODING, b"Content-Encoding");
     (CacheControl, CACHE_CONTROL, b"Cache-Control");
     (Cookie, COOKIE, b"Cookie");
+    (CfVisitor, CF_VISITOR, b"Cf-Visitor");
+    (CfConnectionIp, CF_CONNECTION_IP, b"Cf-Connection-Ip");
+    (CfIpcountry, CF_IPCOUNTRY, b"Cf-Ipcountry");
+    (CfRay, CF_RAY, b"Cf-Ray");
     (Host, HOST, b"Host");
     (Origin, ORIGIN, b"Origin");
+    (Priority, PRIORITY, b"Priority");
     (Referer, REFERER, b"Referer");
     (SecChUa, SEC_CH_UA, b"sec-ch-ua");
     (SecChUaMobile, SEC_CH_UA_MOBILE, b"sec-ch-ua-mobile");
@@ -103,4 +108,5 @@ standard_headers! {
     (SecFetchUser, SEC_FETCH_USER, b"Sec-Fetch-User");
     (SecGpc, SEC_GPC, b"Sec-GPC");
     (UpgradeInsecureRequests, UPGRADE_INSECURE_REQUESTS, b"Upgrade-Insecure-Requests");
+    (XForwardedProto, X_FORWARDED_PROTO, b"X-Forwarded-Proto");
 }
