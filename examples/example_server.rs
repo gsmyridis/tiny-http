@@ -26,7 +26,9 @@ fn main() {
         .bind("localhost:4221")
         .expect("Failed to bind to address");
 
-    println!("\nOpen your browser and visit http://localhost:4221");
+    println!("\nOpen your browser and visit http://localhost:4221.\n");
+    println!("If your server panics, then you should inspect the header-names in the\nHTTP request that your browser sends and add the ones that are missing.\nHave fun contributing :)"
+    );
     server.run();
 }
 
