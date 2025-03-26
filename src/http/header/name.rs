@@ -109,4 +109,5 @@ standard_headers! {
     (SecGpc, SEC_GPC, b"Sec-GPC");
     (UpgradeInsecureRequests, UPGRADE_INSECURE_REQUESTS, b"Upgrade-Insecure-Requests");
     (XForwardedProto, X_FORWARDED_PROTO, b"X-Forwarded-Proto");
+    (XHTTPS, X_HTTPS, b"X-HTTPS");
 }
